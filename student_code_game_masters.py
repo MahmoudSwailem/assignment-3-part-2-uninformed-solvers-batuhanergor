@@ -34,7 +34,34 @@ class TowerOfHanoiGame(GameMaster):
             A Tuple of Tuples that represent the game state
         """
         ### student code goes here
-        pass
+        peg_1 = self.kb.kb_ask(parse_input("fact: (on ?x peg1)"))
+        peg_1_array = []
+        
+        if peg_1:
+            for i in peg_1:
+                peg_1_array.append(int(i['?x'][-1]))
+            peg_1_array.sort()
+    
+        
+        peg_2 = self.kb.kb_ask(parse_input("fact: (on ?x peg2)"))
+        peg_2_array = []
+        
+        if peg_2:
+            for i in peg_2:
+                peg_2_array.append(int(i['?x'][-1]))
+            peg_2_array.sort()
+
+
+        peg_3 = self.kb.kb_ask(parse_input("fact: (on ?x peg3)"))
+        peg_3_array = []
+
+        if peg_3:
+            for i in peg_3:
+                peg_3_array.append(int(i['?x'][-1]))
+            peg_3_array.sort()
+        
+        result = (tuple(peg_1_array), tuple(peg_2_array), tuple(peg_3_array))
+        return result
 
     def makeMove(self, movable_statement):
         """
@@ -53,8 +80,34 @@ class TowerOfHanoiGame(GameMaster):
             None
         """
         ### Student code goes here
-        pass
+        if self.isMovableLegal(movable_statement):
+            disk = str(movable_statement.terms[0])
+            in_peg = str(movable_statement.terms[1])
+            tar_peg = str(movable_statement.terms[2])
+            
+            if self.kb.kb_ask(parse_input("fact: (ontop " + disk + " ?y)")):
+                newtopfact = self.kb.kb_ask(parse_input("fact: (ontop " + disk + " ?y)"))
+                newtopdisk = str(newtopfact[0].bindings[0].constant)
+                self.kb.kb_assert(parse_input("fact: (top " + newtopdisk + " " + in_peg + ")"))
+                self.kb.kb_retract(parse_input("fact: (ontop " + disk + " " + newtopdisk + ")"))
+            else:
+                self.kb.kb_assert(parse_input("fact: (empty " + in_peg + ")"))
+            
 
+            if self.kb.kb_ask(parse_input("fact: (top " + " ?x" + " " + tar_peg + ")")):
+                topfact = self.kb.kb_ask(parse_input("fact: (top " + " ?x" + " " + tar_peg + ")"))
+                topdisk = str(topfact[0].bindings[0].constant)
+                self.kb.kb_assert(parse_input("fact: (ontop " + disk + " " + topdisk + ")"))
+                self.kb.kb_retract(parse_input("fact: (top " + topdisk + " " + tar_peg + ")"))
+            else:
+                self.kb.kb_retract(parse_input("fact: (empty " + tar_peg + ")"))
+
+            self.kb.kb_retract(parse_input("fact: (on " + disk + " " + in_peg + ")"))
+            self.kb.kb_retract(parse_input("fact: (top " + disk + " " + in_peg + ")"))
+            self.kb.kb_assert(parse_input("fact: (on " + disk + " " + tar_peg + ")"))
+            self.kb.kb_assert(parse_input("fact: (top " + disk + " " + tar_peg + ")"))
+            
+                    
     def reverseMove(self, movable_statement):
         """
         See overridden parent class method for more information.

@@ -1,5 +1,6 @@
 
 from solver import *
+from queue import *
 
 class SolverDFS(UninformedSolver):
     def __init__(self, gameMaster, victoryCondition):
@@ -19,13 +20,38 @@ class SolverDFS(UninformedSolver):
             True if the desired solution state is reached, False otherwise
         """
         ### Student code goes here
-        return True
+        if(self.victoryCondition != self.currentState.state):
+            next_moves = self.gm.getMovables()
+            current = self.currentState
+            if next_moves == []:
+                self.gm.reverseMove(self.currentState.requiredMovable)
+            else:
+                
+                for i in next_moves:
+                    self.gm.makeMove(i)
+                    current.children.append(GameState(self.gm.getGameState(), (current.depth + 1), i))
+                    GameState(self.gm.getGameState(), (current.depth + 1), i).parent = current
+                    
+                    self.gm.reverseMove(i)
+                
+                for i in current.children:
+                    if not(i in self.visited):
+                        self.visited[i] = True
+                        self.gm.makeMove(i.requiredMovable)
+                        self.currentState = i
+                        break
+    
+        else:
+            self.visited[self.currentState] = True
+            return True
 
 
 class SolverBFS(UninformedSolver):
     def __init__(self, gameMaster, victoryCondition):
         super().__init__(gameMaster, victoryCondition)
-
+    
+    
+    
     def solveOneStep(self):
         """
         Go to the next state that has not been explored. If a
