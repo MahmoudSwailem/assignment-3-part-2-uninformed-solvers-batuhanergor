@@ -10,6 +10,8 @@ class KnowledgeBase(object):
         self.rules = rules
         self.ie = InferenceEngine()
 
+
+
     def __repr__(self):
         return 'KnowledgeBase({!r}, {!r})'.format(self.facts, self.rules)
 
