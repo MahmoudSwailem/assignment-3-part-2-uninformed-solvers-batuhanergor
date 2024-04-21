@@ -4,7 +4,7 @@ class Fact(object):
     """Represents a fact in our knowledge base. Has a statement containing the
         content of the fact, e.g. (isa Sorceress Wizard) and fields tracking
         which facts/rules in the KB it supports and is supported by.
-
+#jj
     Attributes:
         name (str): 'fact', the name of this class
         statement (Statement): statement of this fact, basically what the fact actually says
